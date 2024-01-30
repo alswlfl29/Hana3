@@ -1,0 +1,55 @@
+/* body 태그 이전에 'BBB' 내용 삽입 */
+body {
+  margin-bottom: 700px;
+}
+
+/* X-Small devices (landscape phones, 576px and up) */
+@media (max-width: 576px) {
+  body::after {
+    content: "XSM";
+  }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) {
+  body::after {
+    content: "SM";
+  }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  body::after {
+    content: "MD";
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  body::after {
+    content: "LD";
+  }
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  body::after {
+    content: "XLD";
+  }
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+  body::after {
+    content: "XXLD";
+  }
+}
+
+.box {
+  background-color: lightgreen;
+  border: 1px solid red;
+  min-height: 2rem;
+  font-size: 2rem;
+  width: 100%;
+  min-width: 20px;
+}

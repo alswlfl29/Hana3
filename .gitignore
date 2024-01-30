@@ -1,2 +1,5 @@
 .DS_Store
 .bash_profile
+.node_modules
+*/node_modules
+dist

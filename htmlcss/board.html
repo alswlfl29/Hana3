@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Latest compiled and minified CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="board.css" />
+    <!-- Latest compiled JavaScript -->
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    ></script>
+    <title>Board</title>
+  </head>
+  <body>
+    <div class="container">
+      <header class="fs-1 fw-bold mb-3">게시판</header>
+      <div class="row border border-3 rounded-1">
+        <aside
+          class="col-sm-12 col-md-3 fs-4 fw-medium text-bg-light text-center border border-end"
+        >
+          <div class="mt-3">목록</div>
+          <hr class="mb-0" />
+          <ul class="list-group my-2">
+            <li class="list-group-item border border-0 bg-light fs-5 fw-normal">
+              aaa
+            </li>
+            <li class="list-group-item border border-0 bg-light fs-5 fw-normal">
+              bbb
+            </li>
+            <li class="list-group-item border border-0 bg-light fs-5 fw-normal">
+              ccc
+            </li>
+            <li class="list-group-item border border-0 bg-light fs-5 fw-normal">
+              ddd
+            </li>
+            <li class="list-group-item border border-0 bg-light fs-5 fw-normal">
+              eee
+            </li>
+            <li class="list-group-item border border-0 bg-light fs-5 fw-normal">
+              fff
+            </li>
+            <li class="list-group-item border border-0 bg-light fs-5 fw-normal">
+              ggg
+            </li>
+            <li class="list-group-item border border-0 bg-light fs-5 fw-normal">
+              hhh
+            </li>
+            <li class="list-group-item border border-0 bg-light fs-5 fw-normal">
+              iii
+            </li>
+            <li class="list-group-item border border-0 bg-light fs-5 fw-normal">
+              jjj
+            </li>
+          </ul>
+        </aside>
+        <article class="col-sm-12 col-md-9 fs-4 fw-medium text-center">
+          <div class="mt-3">글작성</div>
+          <hr class="border border-0" />
+          <div class="container px-5 mb-3">
+            <div class="row mb-3 align-items-center">
+              <div class="input-group mb-3">
+                <span
+                  class="input-group-text fw-bold"
+                  id="inputGroup-sizing-default"
+                  >TITLE</span
+                >
+                <input
+                  type="text"
+                  readonly
+                  class="form-control form-control-plaintext border border-1 px-3"
+                  aria-label="Sizing example input"
+                  aria-describedby="inputGroup-sizing-default"
+                  value="BootStrap"
+                />
+              </div>
+            </div>
+            <div class="fs-6 fw-normal float-end mb-3">작성자</div>
+            <div class="form-floating">
+              <textarea
+                readonly
+                class="border border-2 rounded-1 fs-6 form-control-plaintext lh-base"
+                aria-label="content"
+                placeholder="Leave a comment here"
+                id="contentTextarea"
+                style="height: 300px"
+              >
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</textarea
+              >
+            </div>
+          </div>
+          <div class="px-5 float-end mb-3">
+            <button
+              type="button"
+              class="btn btn-danger me-2"
+              data-bs-toggle="modal"
+              data-bs-target="#deleteModal"
+            >
+              삭제
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#modifyModal"
+            >
+              수정
+            </button>
+          </div>
+        </article>
+      </div>
+      <!-- 삭제 모달 창 -->
+      <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-body fs-3 m-3 text-center fw-bold">
+              정말로 삭제하시겠습니까?
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                data-bs-dismiss="modal"
+              >
+                삭제하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 수정 모달 창 -->
+      <div class="modal fade" id="modifyModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title fs-5 fw-bold">수정하기</h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="row mb-3 align-items-center">
+                <div class="col-sm-12 col-md-1 fs-6 fw-medium">
+                  <label for="titleInput" class="form-label text-black-50"
+                    >Title</label
+                  >
+                </div>
+                <div class="col-sm-12 col-md-11">
+                  <input
+                    type="text"
+                    class="form-control"
+                    aria-label="title"
+                    id="emailInput"
+                    value="BootStrap"
+                    placeholder="제목을 입력해주세요"
+                  />
+                </div>
+              </div>
+              <div class="form-floating">
+                <textarea
+                  class="form-control lh-base"
+                  aria-label="content"
+                  placeholder="Leave a comment here"
+                  id="contentTextarea"
+                  style="height: 300px"
+                  rows="50"
+                  cols="100"
+                  condenseWhite="true"
+                >
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</textarea
+                >
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                class="btn btn-success"
+                data-bs-dismiss="modal"
+              >
+                수정완료
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const modal = new bootstrap.Modal("#modifyModal", {
+          keyboard: false,
+        });
+      });
+      document.addEventListener("DOMContentLoaded", (event) => {
+        const modal = new bootstrap.Modal("#deleteModal", {
+          keyboard: false,
+        });
+      });
+    </script>
+  </body>
+</html>
