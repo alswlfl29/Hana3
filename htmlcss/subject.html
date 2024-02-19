@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Subject</title>
+    <script src="subject.js" defer></script>
+    <style>
+      ul {
+        list-style: none;
+        width: 30%;
+      }
+      ul li {
+        cursor: pointer;
+      }
+      .selected {
+        border: 1px solid green;
+        min-width: 50%;
+      }
+      .active {
+        background-color: green;
+        color: white;
+      }
+      .hide {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="display: flex">
+      <ul class="subjects">
+        <li>JavaScript</li>
+        <li>TypeScript</li>
+        <li>React</li>
+        <li>Next</li>
+      </ul>
+      <div class="selected hide">xxx</div>
+    </div>
+  </body>
+</html>
