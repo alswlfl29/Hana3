@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>주급 계산</title>
+    <style>
+      .container {
+        min-width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      tr,
+      th,
+      td {
+        border: 1px solid black;
+        font-weight: 400;
+      }
+      tr,
+      th {
+        padding: 5px 20px;
+      }
+      td {
+        padding: 3px 1px;
+        text-align: right;
+      }
+      td:nth-child(2) {
+        text-align: left;
+      }
+      #totalPaymentDiv {
+        margin-top: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <table id="paymentTable">
+        <thead>
+          <tr>
+            <th style="padding: 5px 3px">번호</th>
+            <th>이름</th>
+            <th>근무시간</th>
+            <th>시간당급여액</th>
+            <th>기본액</th>
+            <th>초과수당</th>
+            <th style="padding: 5px 30px">합계</th>
+            <th>세액</th>
+            <th>실지불액</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="totalPaymentDiv">총지불액</div>
+    </div>
+    <script>
+      const datas = {
+        base_time: 20,
+        list: [
+          { id: 1, username: "홍길동", work_time: 40, per_pay: 10000 },
+          { id: 2, username: "송민헌", work_time: 20, per_pay: 20000 },
+          { id: 3, username: "장길산", work_time: 30, per_pay: 30000 },
+          { id: 4, username: "임꺽정", work_time: 10, per_pay: 40000 },
+          { id: 5, username: "강민구", work_time: 30, per_pay: 10000 },
+        ],
+      };
+      const COL_IDX = {
+        id: 0,
+        username: 1,
+        work_time: 2,
+        per_pay: 3,
+        base_pay: 4,
+        over_pay: 5,
+        total: 6,
+        tax_amount: 7,
+        actual_payment: 8,
+      };
+      const OVER_AMOUNT = 0.5;
+      const TAX_AMOUNT = 0.033;
+      let totalPaymentAmount = 0; // 총 지불액
+
+      const threeDigits = (price) => {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        datas.list.forEach((data) => {
+          const row = paymentTable.insertRow();
+          const cells = Array(9);
+          for (const [k, v] of Object.entries(data)) {
+            cells[COL_IDX[k]] = k === "per_pay" ? threeDigits(v) : v;
+          }
+
+          cells[COL_IDX["base_pay"]] = data.work_time * data.per_pay;
+          cells[COL_IDX["over_pay"]] =
+            data.work_time - datas.base_time > 0
+              ? (data.work_time - datas.base_time) *
+                (data.per_pay * OVER_AMOUNT)
+              : 0;
+          cells[COL_IDX["total"]] =
+            cells[COL_IDX["base_pay"]] + cells[COL_IDX["over_pay"]];
+          cells[COL_IDX["tax_amount"]] = cells[COL_IDX["total"]] * TAX_AMOUNT;
+          cells[COL_IDX["actual_payment"]] =
+            cells[COL_IDX["total"]] - cells[COL_IDX["tax_amount"]];
+
+          totalPaymentAmount += cells[COL_IDX["actual_payment"]];
+
+          cells.forEach((cell, idx) => {
+            row.insertCell().innerText = idx > 2 ? threeDigits(cell) : cell;
+          });
+        });
+
+        const totalPayDiv = document.getElementById("totalPaymentDiv");
+        const span = document.createElement("span");
+        span.innerText = threeDigits(totalPaymentAmount);
+        span.style.marginLeft = "1rem";
+        totalPayDiv.appendChild(span);
+      });
+    </script>
+  </body>
+</html>
