@@ -1,13 +1,18 @@
-import { useState } from 'react';
-// import reactLogo from "./assets/react.svg";
-// import viteLogo from "/vite.svg";
+import { useRef, useState } from 'react';
 import './App.css';
 import { Hello } from './components/Hello';
 import { My } from './components/My';
 
-// function H5({ ss }: { ss: string }) {
-//   return <h5>H55555566-{ss}</h5>;
-// }
+// const H5 = forwardRef(
+//   (prop: { ss: string }, ref: ForwardedRef<HTMLInputElement>) => {
+//     return (
+//       <>
+//         <h5>H55555566-{ss}</h5>
+//         <button onClick={() => ref.current?.focus()}>Focus InpRef</button>
+//       </>
+//     );
+//   }
+// );
 
 export type LoginUser = { id: number; name: string };
 export type Cart = { id: number; name: string; price: number };
@@ -17,8 +22,8 @@ export type Session = {
 };
 
 const SampleSession = {
-  // loginUser: null,
-  loginUser: { id: 1, name: 'Hong' },
+  loginUser: null,
+  // loginUser: { id: 1, name: 'Hong' },
   cart: [
     { id: 100, name: '라면', price: 3000 },
     { id: 101, name: '컵라면', price: 2000 },
@@ -29,6 +34,9 @@ const SampleSession = {
 function App() {
   const [count, setCount] = useState(0);
   const [session, setSession] = useState<Session>(SampleSession);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  // const nextId = useRef(session.cart[session.cart.length - 1].id + 1);
+  const inpRef = useRef<HTMLInputElement>(null);
 
   const plusCount = () => setCount(count + 1);
   const login = (id: number, name: string) => {
@@ -55,15 +63,46 @@ function App() {
     // session.cart = session.cart.filter((item) => item.id !== itemId);
   };
 
+  // const addItem = (itemName: string, itemPrice: number) => {
+  //   const itemInfo = { id: nextId.current, name: itemName, price: itemPrice };
+  //   setSession({
+  //     ...session,
+  //     cart: session.cart.concat(itemInfo),
+  //   });
+  //   nextId.current += 1;
+  // };
+
+  // add(id===0) or modify(id!==0) item
+  const saveItem = ({ id, name, price }: Cart) => {
+    const { cart } = session;
+    const foundItem = id !== 0 && cart.find((item) => item.id === id);
+    // 추가
+    if (!foundItem) {
+      id = Math.max(...session.cart.map((item) => item.id), 0) + 1;
+      cart.push({ id, name, price }); // 순수함수는 아님
+    } else {
+      foundItem.name = name;
+      foundItem.price = price;
+    }
+    setSession({
+      ...session,
+      cart,
+      // cart: [...cart], // 순수함수
+    });
+  };
+
   return (
     <>
-      <h1>Vite + React</h1>
-      {/* <H5 ss='FirstComponent' /> */}
+      <h1 ref={titleRef}>Vite + React</h1>
+      <input type='text' ref={inpRef} placeholder='inpRef-test' />
+      {/* <H5 ss='FirstComponent' ref={inpRef} /> */}
       <My
         session={session}
         login={login}
         logout={logout}
         removeItem={removeItem}
+        // addItem={addItem}
+        saveItem={saveItem}
       />
       <Hello name='홍길동' age={count + 30} plusCount={plusCount}>
         Hello-children!!!
@@ -71,6 +110,11 @@ function App() {
       <div className='card'>
         <button onClick={() => setCount(count + 1)}>count is {count}</button>
       </div>
+      <button
+        onClick={() => titleRef.current?.scrollIntoView({ behavior: 'smooth' })}
+      >
+        Go to the Top
+      </button>
     </>
   );
 }

@@ -66,3 +66,15 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.pointer {
+  cursor: pointer;
+}
+
+ul.un-list {
+  list-style: none;
+}
+
+.active {
+  border: 1px solid skyblue;
+}
