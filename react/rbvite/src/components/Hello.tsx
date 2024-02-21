@@ -1,20 +1,19 @@
 import { PropsWithChildren } from 'react';
+import { useCounter } from '../contexts/counter-context';
+import { useSession } from '../contexts/session-context';
 
 type Props = {
   name: string;
-  age: number;
-  plusCount: () => void;
   // children: React.ReactNode;
   // children: React.ReactElement;
 };
 // export const Hello: React.FC<Props> = ({ name, age, plusCount, children }) => {
 
-export const Hello = ({
-  name,
-  age,
-  plusCount,
-  children,
-}: PropsWithChildren<Props>) => {
+export const Hello = ({ children }: PropsWithChildren<Props>) => {
+  const { session } = useSession();
+  const { count: age, plusCount } = useCounter();
+
+  const name = session.loginUser?.name || 'Guest';
   return (
     <div style={{ border: '1px solid green' }}>
       <h3>

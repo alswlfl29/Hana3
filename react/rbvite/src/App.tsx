@@ -1,7 +1,9 @@
-import { Ref, createRef, forwardRef, useRef, useState } from 'react';
+import { Ref, createRef, forwardRef, useRef } from 'react';
 import './App.css';
 import { Hello } from './components/Hello';
 import My from './components/My';
+import { useCounter } from './contexts/counter-context';
+import { SessionProvider } from './contexts/session-context';
 
 const H5 = forwardRef(({ ss }: { ss: string }, ref: Ref<HTMLInputElement>) => {
   return (
@@ -13,55 +15,13 @@ const H5 = forwardRef(({ ss }: { ss: string }, ref: Ref<HTMLInputElement>) => {
 });
 H5.displayName = 'H5'; // displayName을 줘야지 화살표함수가 컴포넌트로 취급되어짐
 
-export type LoginUser = { id: number; name: string };
-export type Cart = { id: number; name: string; price: number };
-export type Session = {
-  loginUser: LoginUser | null;
-  cart: Cart[];
-};
-
-const SampleSession = {
-  // loginUser: null,
-  loginUser: { id: 1, name: 'Hong' },
-  cart: [
-    { id: 100, name: '라면', price: 3000 },
-    { id: 101, name: '컵라면', price: 2000 },
-    { id: 200, name: '파', price: 5000 },
-  ],
-};
-
 function App() {
-  const [count, setCount] = useState(0);
-  const [session, setSession] = useState<Session>(SampleSession);
+  const { count, plusCount } = useCounter();
+
   const titleRef = useRef<HTMLHeadingElement>(null);
   // const nextId = useRef(session.cart[session.cart.length - 1].id + 1);
   const childInputRef = createRef<HTMLInputElement>();
   const logoutBtnRef = createRef<HTMLButtonElement>();
-
-  const plusCount = () => setCount(count + 1);
-  const login = (id: number, name: string) => {
-    setSession({
-      ...session,
-      loginUser: { id, name },
-    });
-  };
-  const logout = () => {
-    // setSession({ cart: [...session.cart], loginUser: null });
-    setSession({ ...session, loginUser: null });
-    // session.loginUser = null; // 이러면 virtualDom이 모름
-  };
-
-  const removeItem = (itemId: number) => {
-    // 제일 많이 사용되는 방식이지만, 세션이 크다면 좀 무거움 -> 전부 바뀔거냐
-    setSession({
-      ...session,
-      cart: [...session.cart.filter((item) => item.id !== itemId)],
-      // cart: session.cart.filter((item) => item.id !== itemId), // 성능 면에서는 좋음..?
-    });
-    // callByreference -> 부분만 바뀔거냐의 차이 -> 이렇게 사용하면 리렌더가 안일어남
-    // Virtual-DOM의 rerender() 호출 안함(:session의 주소는 안변했으니까!)
-    // session.cart = session.cart.filter((item) => item.id !== itemId);
-  };
 
   // const addItem = (itemName: string, itemPrice: number) => {
   //   const itemInfo = { id: nextId.current, name: itemName, price: itemPrice };
@@ -71,25 +31,6 @@ function App() {
   //   });
   //   nextId.current += 1;
   // };
-
-  // add(id===0) or modify(id!==0) item
-  const saveItem = ({ id, name, price }: Cart) => {
-    const { cart } = session;
-    const foundItem = id !== 0 && cart.find((item) => item.id === id);
-    // 추가
-    if (!foundItem) {
-      id = Math.max(...session.cart.map((item) => item.id), 0) + 1;
-      cart.push({ id, name, price }); // 순수함수는 아님
-    } else {
-      foundItem.name = name;
-      foundItem.price = price;
-    }
-    setSession({
-      ...session,
-      cart,
-      // cart: [...cart], // 순수함수
-    });
-  };
 
   return (
     <>
@@ -106,20 +47,14 @@ function App() {
         Call
       </button>
       <button onClick={() => logoutBtnRef.current?.click()}>Sign-Out</button>
-      <My
-        session={session}
-        login={login}
-        logout={logout}
-        removeItem={removeItem}
-        // addItem={addItem}
-        saveItem={saveItem}
-        ref={logoutBtnRef}
-      />
-      <Hello name='홍길동' age={count + 30} plusCount={plusCount}>
-        Hello-children!!!
-      </Hello>
+
+      <SessionProvider>
+        <My ref={logoutBtnRef} />
+        <Hello name='홍길동'>Hello-children!!!</Hello>
+      </SessionProvider>
+
       <div className='card'>
-        <button onClick={() => setCount(count + 1)}>count is {count}</button>
+        <button onClick={plusCount}>count is {count}</button>
       </div>
       <button
         onClick={() => titleRef.current?.scrollIntoView({ behavior: 'smooth' })}

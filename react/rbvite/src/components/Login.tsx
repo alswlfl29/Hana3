@@ -1,8 +1,9 @@
 import { FormEvent, forwardRef, useImperativeHandle, useRef } from 'react';
+import { useSession } from '../contexts/session-context';
 
-type Props = {
-  login: (id: number, name: string) => void;
-};
+// type Props = {
+//   login: (id: number, name: string) => void;
+// };
 
 export type LoginHandler = {
   noti: (msg: string) => void;
@@ -10,7 +11,8 @@ export type LoginHandler = {
   focusName: () => void;
 };
 
-export const Login = forwardRef(({ login }: Props, ref) => {
+export const Login = forwardRef((_, ref) => {
+  const { login } = useSession();
   // const [id, setId] = useState(0);
   const idRef = useRef<HTMLInputElement | null>(null);
   // const [name, setName] = useState('');
