@@ -1,18 +1,17 @@
-import { useRef, useState } from 'react';
+import { Ref, createRef, forwardRef, useRef, useState } from 'react';
 import './App.css';
 import { Hello } from './components/Hello';
-import { My } from './components/My';
+import My from './components/My';
 
-// const H5 = forwardRef(
-//   (prop: { ss: string }, ref: ForwardedRef<HTMLInputElement>) => {
-//     return (
-//       <>
-//         <h5>H55555566-{ss}</h5>
-//         <button onClick={() => ref.current?.focus()}>Focus InpRef</button>
-//       </>
-//     );
-//   }
-// );
+const H5 = forwardRef(({ ss }: { ss: string }, ref: Ref<HTMLInputElement>) => {
+  return (
+    <div style={{ border: '1px solid skyblue', marginBottom: '0.5rem' }}>
+      <h5>H5555555-{ss}</h5>
+      <input type='text' ref={ref} placeholder='child-input' />
+    </div>
+  );
+});
+H5.displayName = 'H5'; // displayName을 줘야지 화살표함수가 컴포넌트로 취급되어짐
 
 export type LoginUser = { id: number; name: string };
 export type Cart = { id: number; name: string; price: number };
@@ -22,8 +21,8 @@ export type Session = {
 };
 
 const SampleSession = {
-  loginUser: null,
-  // loginUser: { id: 1, name: 'Hong' },
+  // loginUser: null,
+  loginUser: { id: 1, name: 'Hong' },
   cart: [
     { id: 100, name: '라면', price: 3000 },
     { id: 101, name: '컵라면', price: 2000 },
@@ -36,7 +35,8 @@ function App() {
   const [session, setSession] = useState<Session>(SampleSession);
   const titleRef = useRef<HTMLHeadingElement>(null);
   // const nextId = useRef(session.cart[session.cart.length - 1].id + 1);
-  const inpRef = useRef<HTMLInputElement>(null);
+  const childInputRef = createRef<HTMLInputElement>();
+  const logoutBtnRef = createRef<HTMLButtonElement>();
 
   const plusCount = () => setCount(count + 1);
   const login = (id: number, name: string) => {
@@ -94,8 +94,18 @@ function App() {
   return (
     <>
       <h1 ref={titleRef}>Vite + React</h1>
-      <input type='text' ref={inpRef} placeholder='inpRef-test' />
-      {/* <H5 ss='FirstComponent' ref={inpRef} /> */}
+      <H5 ss='FirstComponent' ref={childInputRef} />
+      <button
+        onClick={() => {
+          if (childInputRef.current) {
+            childInputRef.current.focus();
+            childInputRef.current.value = 'XXXX';
+          }
+        }}
+      >
+        Call
+      </button>
+      <button onClick={() => logoutBtnRef.current?.click()}>Sign-Out</button>
       <My
         session={session}
         login={login}
@@ -103,6 +113,7 @@ function App() {
         removeItem={removeItem}
         // addItem={addItem}
         saveItem={saveItem}
+        ref={logoutBtnRef}
       />
       <Hello name='홍길동' age={count + 30} plusCount={plusCount}>
         Hello-children!!!

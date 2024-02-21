@@ -1,14 +1,28 @@
-import { FormEvent, useRef } from 'react';
+import { FormEvent, forwardRef, useImperativeHandle, useRef } from 'react';
 
 type Props = {
   login: (id: number, name: string) => void;
 };
 
-export const Login = ({ login }: Props) => {
+export type LoginHandler = {
+  noti: (msg: string) => void;
+  focusId: () => void;
+  focusName: () => void;
+};
+
+export const Login = forwardRef(({ login }: Props, ref) => {
   // const [id, setId] = useState(0);
   const idRef = useRef<HTMLInputElement | null>(null);
   // const [name, setName] = useState('');
   const nameRef = useRef<HTMLInputElement | null>(null);
+
+  const handler = {
+    noti: (msg: string) => alert(msg),
+    focusId: () => idRef.current?.focus(),
+    focusName: () => nameRef.current?.focus(),
+  };
+
+  useImperativeHandle(ref, () => handler);
 
   const makeLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // submit 기본기능 무력화시킴
@@ -45,4 +59,6 @@ export const Login = ({ login }: Props) => {
       </form>
     </>
   );
-};
+});
+
+Login.displayName = 'Login';
