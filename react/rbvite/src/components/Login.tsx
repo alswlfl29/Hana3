@@ -1,5 +1,15 @@
-import { FormEvent, forwardRef, useImperativeHandle, useRef } from 'react';
+import {
+  FormEvent,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+} from 'react';
 import { useSession } from '../contexts/session-context';
+import { useCounter } from '../contexts/counter-context';
+import { useTimeout } from '../hooks/timeout';
+import { useToggle } from '../hooks/toggle';
+import { useNavigate } from 'react-router-dom';
 
 // type Props = {
 //   login: (id: number, name: string) => void;
@@ -12,6 +22,8 @@ export type LoginHandler = {
 };
 
 export const Login = forwardRef((_, ref) => {
+  const navigate = useNavigate();
+  const { plusCount, minusCount } = useCounter();
   const { login } = useSession();
   // const [id, setId] = useState(0);
   const idRef = useRef<HTMLInputElement | null>(null);
@@ -41,10 +53,37 @@ export const Login = forwardRef((_, ref) => {
     }
     const id = idRef.current.value;
     const name = nameRef.current.value;
-    login(+id, name);
+    if (login(+id, name ?? '')) navigate('/my');
   };
+
+  useEffect(() => {
+    plusCount();
+    return () => minusCount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // useTimeout(() => console.log('X>>', count), 1000, [count]);
+
+  const [isShow, toggle] = useToggle();
+
+  const { clear, reset } = useTimeout(
+    () => console.log('isShow>>', isShow),
+    1000
+  );
+  reset();
+  // useTimeout(clear, 500);
+
   return (
     <>
+      <button onClick={reset}>Reset</button>
+      <button onClick={clear}>Clear</button>
+
+      <button
+        onClick={toggle}
+        style={{ border: `1px solid ${isShow ? 'red' : 'yellow'}` }}
+      >
+        {isShow ? 'Hide' : 'Show'}
+      </button>
       <form onSubmit={makeLogin}>
         <div>
           <span style={{ margin: '1em' }}>LoginID:</span>

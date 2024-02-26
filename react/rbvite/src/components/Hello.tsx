@@ -3,7 +3,7 @@ import { useCounter } from '../contexts/counter-context';
 import { useSession } from '../contexts/session-context';
 
 type Props = {
-  name: string;
+  name?: string;
   // children: React.ReactNode;
   // children: React.ReactElement;
 };
@@ -11,7 +11,7 @@ type Props = {
 
 export const Hello = ({ children }: PropsWithChildren<Props>) => {
   const { session } = useSession();
-  const { count: age, plusCount } = useCounter();
+  const { count: age, plusCount, minusCount } = useCounter();
 
   const name = session.loginUser?.name || 'Guest';
   return (
@@ -20,6 +20,8 @@ export const Hello = ({ children }: PropsWithChildren<Props>) => {
         Hello, {name} ({age})
       </h3>
       <button onClick={plusCount}>Plus Age</button>
+
+      <button onClick={() => minusCount()}>Minus Age</button>
       <div>{children}</div>
     </div>
   );

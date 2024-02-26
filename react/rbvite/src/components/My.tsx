@@ -22,6 +22,7 @@ const My = forwardRef((_, ref: Ref<HTMLButtonElement>) => {
   const [currId, setCurrId] = useState(0);
   const {
     session: { loginUser, cart },
+    totalPrice,
     removeItem,
     saveItem,
   } = useSession();
@@ -114,12 +115,19 @@ const My = forwardRef((_, ref: Ref<HTMLButtonElement>) => {
             {/* <button onClick={() => {}}> */}({id}){name} (
             {price.toLocaleString()}원)
             {/* </button> */}
-            <button title={`removeItem(${id})`} onClick={() => removeItem(id)}>
+            <button
+              title={`removeItem(${id})`}
+              onClick={(e) => {
+                e.stopPropagation();
+                removeItem(id);
+              }}
+            >
               X
             </button>
           </li>
         ))}
       </ul>
+      <div className='font-bold text-red-600'>총금액:{totalPrice}</div>
       <form
         onSubmit={saveCartItem}
         onReset={
