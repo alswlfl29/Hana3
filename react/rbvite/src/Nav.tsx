@@ -20,8 +20,7 @@ export const Nav = () => {
         <li>
           <NavLink
             to='/posts'
-            style={({ isActive, isPending }) => {
-              console.log({ isActive, isPending });
+            style={({ isActive }) => {
               return { color: isActive ? 'red' : 'inherit' };
             }}
           >
@@ -47,12 +46,27 @@ export const Nav = () => {
         <li>
           <NavLink
             to='/defertrans'
-            style={({ isActive, isPending }) => {
-              console.log({ isActive, isPending });
-              return { color: 'red' };
+            className={({ isActive, isPending, isTransitioning }) => {
+              return clsx({
+                'text-red-500': isActive,
+                'border border-red-500': isPending || isTransitioning,
+              });
             }}
           >
             DeferTrans
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to='/v1/items'
+            className={({ isActive, isPending, isTransitioning }) => {
+              return clsx({
+                'text-red-500': isActive,
+                'border border-red-500': isPending || isTransitioning,
+              });
+            }}
+          >
+            Items
           </NavLink>
         </li>
       </ul>

@@ -10,6 +10,11 @@ import { NotFound } from './NotFound';
 import { Home } from './components/Home';
 import Sample from './components/Sample';
 import DeferTrans from './components/DeferTrans';
+import { PostLayout } from './components/PostLayout';
+import { PostDetail } from './components/PostDetail';
+import { ItemLayout } from './components/items_v1/ItemLayout';
+import { Items } from './components/items_v1/Items';
+import { Item } from './components/items_v1/Item';
 // import DeferTrans from './components/DeferTrans';
 // import Effect from './components/Effect';
 
@@ -25,9 +30,14 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/login' element={<Login />} />
           <Route path='/my' element={<My />} />
-          <Route path='/posts' element={<Posts />} />
-          {/* <Route path='/items' element={<Items />} />
-        <Route path='/items/:id' element={<Item />} /> */}
+          <Route path='/posts' element={<PostLayout />}>
+            <Route index element={<Posts />} />
+            <Route path=':id' element={<PostDetail />} />
+          </Route>
+          <Route path='/v1/items' element={<ItemLayout />}>
+            <Route index element={<Items />} />
+            <Route path=':id' element={<Item />} />
+          </Route>
           <Route path='/hello' element={<Hello />} />
           <Route path='/sample' element={<Sample />} />
           <Route path='/defertrans' element={<DeferTrans />} />

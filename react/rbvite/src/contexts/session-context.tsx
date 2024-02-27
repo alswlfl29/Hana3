@@ -73,6 +73,7 @@ const reducer = (session: Session, { type, payload }: Action) => {
 
     case 'login':
     case 'logout':
+      localStorage.setItem('loginUser', JSON.stringify(payload));
       return { ...session, loginUser: payload };
 
     case 'saveItem': {
@@ -82,19 +83,25 @@ const reducer = (session: Session, { type, payload }: Action) => {
       if (!foundItem) {
         const maxId = Math.max(...session.cart.map((item: Cart) => item.id), 0);
         // cart.push({ id: maxId + 1, name, price }); // 순수함수는 아님(reducer로 가는 순간 2번 호출)
-        return { ...session, cart: [...cart, { id: maxId + 1, name, price }] }; // 순수함수
+        const addCart = [...cart, { id: maxId + 1, name, price }];
+        localStorage.setItem('cart', JSON.stringify(addCart));
+        return { ...session, cart: addCart }; // 순수함수
       } else {
         foundItem.name = name;
         foundItem.price = price;
+        localStorage.setItem('cart', JSON.stringify([...cart]));
         return { ...session, cart: [...cart] }; // 같은 메모리에 2번 적용
       }
     }
 
-    case 'removeItem':
+    case 'removeItem': {
+      const removeCart = session.cart.filter((item) => item.id !== payload);
+      localStorage.setItem('cart', JSON.stringify(removeCart));
       return {
         ...session,
-        cart: session.cart.filter((item) => item.id !== payload),
+        cart: removeCart,
       };
+    }
 
     default:
       return session;
@@ -191,7 +198,11 @@ export const SessionProvider = ({ children }: ProviderProps) => {
   const { data } = useFetch<Session>({ url: '/data/sample.json' });
   // 리렌더시 계속 발생됨 -> useEffect 사용하여 1번만 발생
   useEffect(() => {
-    if (data) dispatch({ type: 'set', payload: data });
+    if (data) {
+      dispatch({ type: 'set', payload: data });
+      localStorage.setItem('loginUser', JSON.stringify(data.loginUser));
+      localStorage.setItem('cart', JSON.stringify(data.cart));
+    }
   }, [data]);
 
   // useEffect(() => {

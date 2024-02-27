@@ -5,6 +5,7 @@ type FetchParam<T> = {
   options?: RequestInit;
   dependencies?: unknown[];
   defaultValue?: T;
+  enable?: boolean;
 };
 
 export const useFetch = <T>({
@@ -12,6 +13,7 @@ export const useFetch = <T>({
   options = {},
   dependencies = [],
   defaultValue,
+  enable = true,
 }: FetchParam<T>) => {
   const [data, setData] = useState<T | undefined>(defaultValue);
   const [isLoading, setLoading] = useState(false);
@@ -21,11 +23,18 @@ export const useFetch = <T>({
     const controller = new AbortController();
     options.signal = controller.signal;
 
+    if (!enable) return;
+
     (async function () {
       setLoading(true);
       setError('');
       try {
+        console.log('ffffffffffffffffffffff');
         const res = await fetch(url, options);
+        if (!res.ok) {
+          setError(res.status.toString());
+          return;
+        }
         const data = (await res.json()) as T;
         setData(data);
       } catch (err) {

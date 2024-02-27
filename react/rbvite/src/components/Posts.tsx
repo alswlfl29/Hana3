@@ -1,31 +1,11 @@
 import { useSession } from '../contexts/session-context';
-import { FaAngleDown, FaAngleUp } from 'react-icons/fa6';
 import { Login } from './Login';
-import { useToggle } from '../hooks/toggle';
 import { useFetch } from '../hooks/fetch';
 import clsx from 'clsx';
-
-type PostType = {
-  useId: number;
-  id: number;
-  title: string;
-  body: string;
-  // isOpen: boolean;
-};
-
-// Best!!
-const Post = ({ post }: { post: PostType }) => {
-  const [isOpen, toggleOpen] = useToggle();
-  return (
-    <li className={clsx({ border: isOpen, 'border-green-500': isOpen })}>
-      <strong className={clsx(isOpen && 'text-green-500')}>{post.title}</strong>
-      <button onClick={() => toggleOpen()}>
-        {isOpen ? <FaAngleUp /> : <FaAngleDown />}
-      </button>
-      {isOpen && <div>{post.body}</div>}
-    </li>
-  );
-};
+import { useLocation, useParams, useSearchParams } from 'react-router-dom';
+import { useTimeout } from '../hooks/timeout';
+import { useEffect, useState } from 'react';
+import Post, { PostType } from './Post';
 
 const BASE_URL = 'https://jsonplaceholder.typicode.com';
 
@@ -34,6 +14,16 @@ export default function Posts() {
     session: { loginUser },
   } = useSession();
   // const [posts, setPosts] = useState<PostType[]>([]);
+  const { id } = useParams();
+  console.log('id>>', id);
+  const location = useLocation();
+  console.log('location>>', location.state);
+
+  const [searchParams, setSearchParams] = useSearchParams({});
+  const q = searchParams.get('q');
+  console.log('q>>', q);
+  useTimeout(() => setSearchParams({ q: 'qqq' }), 1000);
+  const [, setSearchStr] = useState('');
 
   const {
     data: posts,
@@ -44,6 +34,10 @@ export default function Posts() {
     dependencies: [loginUser],
     defaultValue: [],
   });
+
+  useEffect(() => {
+    setSearchStr(q || '');
+  }, [q]);
 
   // const [, toggleReloading] = useToggle();
 
@@ -68,7 +62,7 @@ export default function Posts() {
             <Login />
           </>
         )}
-        {posts?.map((post) => <Post key={post.id} post={post} />)}
+        {posts?.map((post) => <Post key={post.id} postData={post} />)}
       </ul>
     </div>
   );
