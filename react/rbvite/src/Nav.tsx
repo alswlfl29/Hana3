@@ -69,6 +69,19 @@ export const Nav = () => {
             Items
           </NavLink>
         </li>
+        <li>
+          <NavLink
+            to='/v2/items'
+            className={({ isActive, isPending, isTransitioning }) => {
+              return clsx({
+                'text-red-500': isActive,
+                'border border-red-500': isPending || isTransitioning,
+              });
+            }}
+          >
+            ItemsV2
+          </NavLink>
+        </li>
       </ul>
     </nav>
   );

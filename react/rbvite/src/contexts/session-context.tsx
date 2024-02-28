@@ -12,7 +12,6 @@ import {
 } from 'react';
 import { ItemHandler } from '../components/My';
 import { Session, Cart, LoginUser } from './session';
-import { useFetch } from '../hooks/fetch';
 
 type SessionContextProp = {
   session: Session;
@@ -21,23 +20,6 @@ type SessionContextProp = {
   logout: () => void;
   removeItem: (itemId: number) => void;
   saveItem: ({ id, name, price }: Cart) => void;
-};
-
-const SessionContext = createContext<SessionContextProp>({
-  session: {
-    loginUser: null,
-    cart: [],
-  },
-  totalPrice: 0,
-  login: () => false,
-  logout: () => {},
-  removeItem: () => {},
-  saveItem: () => {},
-});
-
-type ProviderProps = {
-  children: ReactNode;
-  myHandlerRef?: RefObject<ItemHandler>;
 };
 
 // as로 하게 되어 별로 좋지 않음
@@ -66,46 +48,92 @@ type Action =
   | { type: 'saveItem'; payload: Cart }
   | { type: 'removeItem'; payload: number };
 
+type ProviderProps = {
+  children: ReactNode;
+  myHandlerRef?: RefObject<ItemHandler>;
+};
+
+const SKEY = 'session';
+const DefaultSession: Session = {
+  loginUser: null,
+  cart: [],
+};
+
+function getStorage() {
+  const storedData = localStorage.getItem(SKEY);
+  if (storedData) {
+    return JSON.parse(storedData) as Session;
+  }
+
+  setStorage(DefaultSession);
+
+  return DefaultSession;
+}
+
+function setStorage(session: Session) {
+  localStorage.setItem(SKEY, JSON.stringify(session));
+}
+
+const SessionContext = createContext<SessionContextProp>({
+  session: {
+    loginUser: null,
+    cart: [],
+  },
+  totalPrice: 0,
+  login: () => false,
+  logout: () => {},
+  removeItem: () => {},
+  saveItem: () => {},
+});
+
 const reducer = (session: Session, { type, payload }: Action) => {
+  let newer;
   switch (type) {
     case 'set':
-      return { ...payload };
+      newer = { ...payload };
+      break;
 
     case 'login':
     case 'logout':
-      localStorage.setItem('loginUser', JSON.stringify(payload));
-      return { ...session, loginUser: payload };
+      newer = { ...session, loginUser: payload };
+      break;
 
-    case 'saveItem': {
-      const { id, name, price } = payload;
-      const { cart } = session;
-      const foundItem = id !== 0 && cart.find((item: Cart) => item.id === id);
-      if (!foundItem) {
-        const maxId = Math.max(...session.cart.map((item: Cart) => item.id), 0);
-        // cart.push({ id: maxId + 1, name, price }); // 순수함수는 아님(reducer로 가는 순간 2번 호출)
-        const addCart = [...cart, { id: maxId + 1, name, price }];
-        localStorage.setItem('cart', JSON.stringify(addCart));
-        return { ...session, cart: addCart }; // 순수함수
-      } else {
-        foundItem.name = name;
-        foundItem.price = price;
-        localStorage.setItem('cart', JSON.stringify([...cart]));
-        return { ...session, cart: [...cart] }; // 같은 메모리에 2번 적용
+    case 'saveItem':
+      {
+        const { id, name, price } = payload;
+        const { cart } = session;
+        const foundItem = id !== 0 && cart.find((item: Cart) => item.id === id);
+        if (!foundItem) {
+          const maxId = Math.max(
+            ...session.cart.map((item: Cart) => item.id),
+            0
+          );
+          // cart.push({ id: maxId + 1, name, price }); // 순수함수는 아님(reducer로 가는 순간 2번 호출)
+          newer = {
+            ...session,
+            cart: [...cart, { id: maxId + 1, name, price }],
+          }; // 순수함수
+        } else {
+          foundItem.name = name;
+          foundItem.price = price;
+          newer = { ...session, cart: [...cart] }; // 같은 메모리에 2번 적용
+        }
       }
-    }
+      break;
 
-    case 'removeItem': {
-      const removeCart = session.cart.filter((item) => item.id !== payload);
-      localStorage.setItem('cart', JSON.stringify(removeCart));
-      return {
+    case 'removeItem':
+      newer = {
         ...session,
-        cart: removeCart,
+        cart: session.cart.filter((item) => item.id !== payload),
       };
-    }
+
+      break;
 
     default:
       return session;
   }
+  setStorage(newer);
+  return newer;
 };
 
 // export const SessionProvider = ({ children }: PropsWithChildren) => {
@@ -114,10 +142,7 @@ export const SessionProvider = ({ children }: ProviderProps) => {
   //   loginUser: null,
   //   cart: [],
   // });
-  const [session, dispatch] = useReducer(reducer, {
-    loginUser: null,
-    cart: [],
-  });
+  const [session, dispatch] = useReducer(reducer, DefaultSession);
 
   const totalPrice = useMemo(
     () => session.cart.reduce((sum: number, item: Cart) => sum + item.price, 0),
@@ -195,15 +220,13 @@ export const SessionProvider = ({ children }: ProviderProps) => {
   // 이곳에서 DB에 저장해주어야지 메모리 낭비 발생 X
   // useEffect(()=>fetchToSave(), [session.cart])
 
-  const { data } = useFetch<Session>({ url: '/data/sample.json' });
-  // 리렌더시 계속 발생됨 -> useEffect 사용하여 1번만 발생
-  useEffect(() => {
-    if (data) {
-      dispatch({ type: 'set', payload: data });
-      localStorage.setItem('loginUser', JSON.stringify(data.loginUser));
-      localStorage.setItem('cart', JSON.stringify(data.cart));
-    }
-  }, [data]);
+  // const { data } = useFetch<Session>({ url: '/data/sample.json' });
+  // // 리렌더시 계속 발생됨 -> useEffect 사용하여 1번만 발생
+  // useEffect(() => {
+  //   if (data) {
+  //     dispatch({ type: 'set', payload: data });
+  //   }
+  // }, [data]);
 
   // useEffect(() => {
   //   const controller = new AbortController();
@@ -228,6 +251,10 @@ export const SessionProvider = ({ children }: ProviderProps) => {
 
   //   // setDefaultSession();
   // }, []);
+
+  useEffect(() => {
+    dispatch({ type: 'set', payload: getStorage() });
+  }, []);
 
   return (
     <SessionContext.Provider
